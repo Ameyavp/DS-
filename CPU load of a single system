@@ -1,0 +1,22 @@
+import java.io.*;
+public class mypgm
+{
+public static void main(String args[]) throws Exception
+{
+String line = "null";
+String cmd = "top -n 1 -b";
+Process cpu_time = Runtime.getRuntime().exec(cmd);
+InputStream iout = cpu_time.getInputStream();
+BufferedReader br = new BufferedReader(new InputStreamReader(iout));
+int i = 0;
+while( i < 3 )
+{
+line = br.readLine();
+i++;
+}
+System.out.println(line);
+String delims = "%";
+String[] parts = line.split(delims);
+System.out.println("User: " + parts[0]);
+}
+}
