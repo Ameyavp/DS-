@@ -1,0 +1,88 @@
+Server Side :
+import java.io.*;
+import java.net.*;
+import java.net.Socket;
+import java.util.*;
+public class newServer extends Thread
+{
+String msg;
+List<Float> msgList = new ArrayList<Float>();
+List<String> ip = new ArrayList<String>();
+ServerSocket ser;
+String clientip;
+int min_index, max_index;
+Socket s;
+BufferedReader br;
+PrintWriter pw;
+public newServer(int port) throws Exception
+{
+System.out.println("Server running");
+ser=new ServerSocket(port);
+}
+public void run()
+{
+try
+{
+while(true)
+{
+s=ser.accept();
+System.out.println(s.getInetAddress());
+clientip = ""+s.getInetAddress();
+System.out.println("Client started");
+br=new BufferedReader(new InputStreamReader(s.getInputStream()));
+msg = br.readLine();
+Float f = Float.valueOf(msg);
+msgList.add(f);
+ip.add(clientip);
+min_index = msgList.indexOf(Collections.min(msgList));
+max_index = msgList.indexOf(Collections.max(msgList));
+System.out.println("Minimum Loaded: "+Collections.min(msgList)
++"-"+ip.get(min_index));
+System.out.println("Maximum Loaded: "+Collections.max(msgList)
++"-"+ip.get(max_index));
+}
+}
+catch(Exception e)
+{
+}
+}
+public static void main(String args[]) throws Exception
+{
+int port = Integer.parseInt(args[0]);
+Thread t=new newServer(port);
+t.start();
+}
+}
+
+
+Client Side :
+
+import java.io.*;
+import java.net.*;
+public class newClient
+{
+public static void main(String args[]) throws Exception
+{
+Socket s;
+System.out.println("Client ready");
+s=new Socket("10.30.56.103",8000);
+String line = "null";
+String cmd = "top -n 1 -b";
+Process cpu_time = Runtime.getRuntime().exec(cmd);
+InputStream iout = cpu_time.getInputStream();
+BufferedReader br = new BufferedReader(new InputStreamReader(iout));
+PrintWriter pw = new PrintWriter(s.getOutputStream(), true);
+int i = 0;
+while( i < 3 )
+{
+line = br.readLine();
+i++;
+}
+System.out.println(line);
+String delims = "%";
+String[] parts = line.split(delims);
+System.out.println("User: "+parts[0]);
+String[] am = parts[0].split(":");
+pw.println(am[1]);
+}
+}
